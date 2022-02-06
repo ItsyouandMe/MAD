@@ -1,0 +1,250 @@
+Main Activity.java
+
+
+package com.example.lab13healthmonitoringdatabase;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.FileInputStream;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        EditText e1=(EditText) findViewById(R.id.name);
+        EditText e2=(EditText) findViewById(R.id.age);
+        EditText e3=(EditText) findViewById(R.id.bp);
+        EditText e4=(EditText) findViewById(R.id.Sugar);
+        TextView tv1=(TextView) findViewById(R.id.tv5);
+        Button b1=(Button) findViewById(R.id.save);
+        Button b2=(Button) findViewById(R.id.report);
+        DatabaseHelper db=new DatabaseHelper(MainActivity.this);
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String n1=e2.getText().toString();
+                int ag=Integer.parseInt(n1);
+                String n2=e3.getText().toString();
+                int bp=Integer.parseInt(n2);
+                String n3=e4.getText().toString();
+                int sugar=Integer.parseInt(n3);
+                boolean status= db.insert(e1.getText().toString(),ag,bp,sugar);
+                if(status==true){
+                    Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(getApplicationContext(),"failed",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Cursor cr=db.select();
+                StringBuffer bf=new StringBuffer();
+                if(cr.getCount()==0){
+                    Toast.makeText(getApplicationContext(), "No records Fond ", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    while(cr.moveToNext()){
+                        bf.append("NAME:   "+cr.getString(1));
+                        bf.append("AGE: "+cr.getString(2));
+                        bf.append("bp: "+cr.getString(3));
+                        bf.append("Sugar" +cr.getString(4));
+                        bf.append("\n");
+                    }
+                    tv1.setText(bf+" ");
+                }
+            }
+        });
+
+    }
+}
+
+
+
+
+DatabaseHelper.java
+
+
+
+
+package com.example.lab13healthmonitoringdatabase;
+
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class DatabaseHelper extends SQLiteOpenHelper {
+    DatabaseHelper(Context context){
+        super(context,"Health.db",null,1);
+    }
+    public void onCreate(SQLiteDatabase sqLiteDatabase){
+        sqLiteDatabase.execSQL("CREATE TABLE HOSPITAL (SNO INTEGER PRIMARY KEY AUTOINCREMENT, PNAME TEXT,PAGE INTEGER, PBP INTEGER, PSUGAR INTEGER);");
+    }
+    public boolean insert(String name,int age,int bp,int sugar){
+        SQLiteDatabase db=getWritableDatabase();
+        ContentValues cv=new ContentValues();
+        cv.put("PNAME",name);
+        cv.put("PAGE",age);
+        cv.put("PBP",bp);
+        cv.put("PSUGAR",sugar);
+        long status=db.insert("HOSPITAL",null, cv);
+        if(status==-1)
+            return false;
+        else
+            return true;
+    }
+    public Cursor select(){
+        SQLiteDatabase db=getWritableDatabase();
+        Cursor c=db.rawQuery("SELECT * FROM HOSPITAL",null);
+        return c;
+    }
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1){
+        sqLiteDatabase.execSQL("DROP TABLE HOSPITAL");
+        onCreate(sqLiteDatabase);
+    }
+
+}
+
+
+
+
+
+Main Activity.xml
+
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/age"
+        android:layout_width="260dp"
+        android:layout_height="56dp"
+        android:ems="10"
+        android:hint="Enter age"
+        android:inputType="textPersonName"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.43"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.192" />
+
+    <EditText
+        android:id="@+id/bp"
+        android:layout_width="269dp"
+        android:layout_height="45dp"
+        android:ems="10"
+        android:hint="Enter HB"
+        android:inputType="textPersonName"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.394"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.298" />
+
+    <EditText
+        android:id="@+id/Sugar"
+        android:layout_width="263dp"
+        android:layout_height="46dp"
+        android:ems="10"
+        android:hint="Enter Sugar"
+        android:inputType="textPersonName"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.408"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.404" />
+
+    <TextView
+        android:id="@+id/tv1"
+        android:layout_width="267dp"
+        android:layout_height="42dp"
+        android:text="Health Monitor "
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.451"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023" />
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="254dp"
+        android:layout_height="45dp"
+        android:ems="10"
+        android:hint="Enter name "
+        android:inputType="textPersonName"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.414"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.103" />
+
+    <TextView
+        android:id="@+id/tv5"
+        android:layout_width="256dp"
+        android:layout_height="278dp"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.964" />
+
+    <Button
+        android:id="@+id/save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SAVE"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.239"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.537" />
+
+    <Button
+        android:id="@+id/report"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="REPORT"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.719"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.537" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
