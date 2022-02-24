@@ -1,0 +1,189 @@
+PART A
+
+1)
+
+sudo jps
+
+gedit sports
+
+ls
+
+hadoop fs -put sports /user/cloudera
+
+hadoop fs -ls /user/cloudera
+
+hadoop fs -cat /user/cloudera/sports
+
+COUNT:
+
+cd /usr/lib/hadoop-0.20-mapreduce/
+
+ls
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar wordcount /user/cloudera/sports /user/cloudera/output1sports
+
+hadoop fs -ls /user/cloudera/sports
+
+hadoop fs -ls /user/cloudera/output1sports
+
+hadoop fs -cat /user/cloudera/output1sports/part-r-00000
+
+GREP:
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar grep /user/cloudera/sports /user/cloudera/output2sports Swimming
+
+hadoop fs -ls /user/cloudera/sports
+
+hadoop fs -ls /user/cloudera/output2sports
+
+hadoop fs -cat /user/cloudera/output2sports/part-00000
+
+
+2) 1)
+
+sudo service mysqld start
+
+mysql -u root
+
+create database hospitaldb;
+
+use hospitaldb;
+create table doctor(dname varchar(20),speciality varchar(20));
+create table patient(ptid int,name varchar(20),disease varchar(20));
+insert into doctor values('John','cardiology'),('Ram','dentist'),('Sita','cardiology');
+insert into patient values(1,'Ben','dengue'),(2,'Tom','fever'),(3,'Jerry','dengue');
+exit
+
+sqoop import --connect "jdbc:mysql://localhost/hospitaldb" --username root --table patient --where "disease='dengue'" --target-dir /user/cloudera/dirhospitaldb/filehospital -m 1
+
+hadoop fs -cat /user/cloudera/dirhospitaldb/filehospital/part*
+
+2) 2)
+
+sqoop eval --connect "jdbc:mysql://localhost/hospitaldb" --username root --query "delete from doctor where speciality='cardiology'"
+
+hadoop fs -cat /user/cloudera/doctor/part*
+
+
+
+
+PART B
+
+
+1)
+hbase shell
+create 'moviestars','personaldetail','professionaldetail'
+
+put 'moviestars','row1','personaldetail:name','Sharukh'
+
+put 'moviestars','row1','personaldetail:age',47
+
+put 'moviestars','row1','personaldetail:birthplace','Delhi'
+
+put 'moviestars','row1','professionaldetail:filmtype','Romantic'
+
+put 'moviestars','row1','professionaldetail:Count_of_films',90
+
+
+put 'moviestars','row2','personaldetail:name','Salman'
+
+put 'moviestars','row2','personaldetail:age',45
+
+put 'moviestars','row2','personaldetail:birthplace','Mumbai'
+
+put 'moviestars','row2','professionaldetail:filmtype','Mass'
+
+put 'moviestars','row2','professionaldetail:Count_of_films',88
+
+
+put 'moviestars','row3','personaldetail:name','Akshay'
+
+put 'moviestars','row3','personaldetail:age',42
+
+put 'moviestars','row3','personaldetail:birthplace','Jalandhar'
+
+put 'moviestars','row3','professionaldetail:filmtype','Action'
+
+put 'moviestars','row3','professionaldetail:Count_of_films',70
+
+
+put 'moviestars','row4','personaldetail:name','Aliya'
+
+put 'moviestars','row4','personaldetail:age',26
+
+put 'moviestars','row4','personaldetail:birthplace','Lucknow'
+
+put 'moviestars','row4','professionaldetail:filmtype','Classic'
+
+put 'moviestars','row4','professionaldetail:Count_of_films',25
+
+scan 'moviestars'
+
+2) 1)
+
+put 'moviestars','row2','professionaldetail:filmtype','Romantic'
+
+put 'moviestars','row2','professionaldetail:filmtype','Action'
+
+get 'moviestars','row2',{COLUMN=>'professionaldetail:filmtype',VERSIONS=>3}
+
+2) 2)
+
+get 'moviestars','row2',{COLUMN=>'professionaldetail:filmtype',VERSIONS=>3}
+
+
+2) 3)
+
+get 'moviestars','row4',{COLUMN=>'professionaldetail:Count_of_films',VERSIONS=>3}
+
+
+2) 4)
+
+disable 'moviestars'  //did'nt get
+
+2) 5)
+
+
+enable 'moviestars'
+
+hbase(main):002:0> get 'moviestars','row1',{COLUMN=>'personaldetail:name'}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

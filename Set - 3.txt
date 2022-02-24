@@ -1,0 +1,158 @@
+PART A 
+
+1)
+
+sudo jps
+
+gedit sports
+
+ls
+
+hadoop fs -put sports /user/cloudera
+
+hadoop fs -ls /user/cloudera
+
+hadoop fs -cat /user/cloudera/sports
+
+COUNT:
+
+cd /usr/lib/hadoop-0.20-mapreduce/
+
+ls
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar wordcount /user/cloudera/sports /user/cloudera/output1sports
+
+hadoop fs -ls /user/cloudera/sports
+
+hadoop fs -ls /user/cloudera/output1sports
+
+hadoop fs -cat /user/cloudera/output1sports/part-r-00000
+
+GREP:
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar grep /user/cloudera/sports /user/cloudera/output2sports Swimming
+
+hadoop fs -ls /user/cloudera/sports
+
+hadoop fs -ls /user/cloudera/output2sports
+
+hadoop fs -cat /user/cloudera/output2sports/part-00000
+
+
+
+
+2) 1)
+
+sudo service mysqld start
+
+mysql -u root
+
+create database university;
+
+use university;
+
+create table student(usn int,name varchar(20));
+
+create table dept(did int,name varchar(20));
+
+insert into student values(1,'AA'),(2,'BB'),(3,'CC');
+
+insert into dept values(10,'CSE'),(20,'ISE'),(30,'ME');
+
+exit
+
+sqoop import --connect "jdbc:mysql://localhost/university" --username root --table dept -m 1
+
+hadoop fs -ls /user/cloudera/dept
+
+hadoop fs -cat /user/cloudera/dept/part*
+
+2) 2)
+
+
+sqoop eval --connect "jdbc:mysql://localhost/university" --username root --query "select * from student where usn>1"
+
+
+PART B
+
+1) 
+hbase shell
+
+create 'student','personaldetail','educationaldetail'
+
+put 'student','row1','personaldetail:name','Lalit'
+put 'student','row1','personaldetail:place','Bang'
+put 'student','row1','educationaldetail:Degree','BE'
+put 'student','row1','educationaldetail:college','NHCE'
+
+
+put 'student','row2','personaldetail:name','Naveen'
+put 'student','row2','personaldetail:place','Chennai'
+put 'student','row2','educationaldetail:Degree','ME'
+put 'student','row2','educationaldetail:college','SRM'
+
+put 'student','row3','personaldetail:name','Guru'
+put 'student','row3','personaldetail:place','Bang'
+put 'student','row3','educationaldetail:Degree','ME'
+put 'student','row3','educationaldetail:college','IISC'
+
+put 'student','row4','personaldetail:name','Janani'
+put 'student','row4','personaldetail:place','Hyd'
+put 'student','row4','educationaldetail:Degree','MBBS'
+put 'student','row4','educationaldetail:college','Osmania'
+
+scan 'student'
+
+
+
+2) 1)
+
+get 'student','row3','educationaldetail:college'
+
+2) 2)
+
+get 'student','row2'
+
+2) 3) 
+
+disable 'student' 
+alter 'student',NAME=>'xyz',VERSIONS=>5
+enable 'student'
+put 'student','row1','xyz:city','hello'
+scan 'student'
+
+2) 4)
+
+delete 'student','row1','xyz:city'
+deleteall 'student','row1'
+scan 'student'
+
+2) 5)
+
+
+ disable 'student'
+alter 'student', NAME=>'AA',VERSIONS=>5
+
+enable 'student'
+put 'student','row2','AA:college','NHCE'
+scan 'student'
+disable 'student'
+alter 'student','delete'=>'AA'
+enable 'student'
+scan 'student'
+
+
+
+
+
+
+
+
+
+
+
+
+
+

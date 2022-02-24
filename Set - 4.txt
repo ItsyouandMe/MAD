@@ -1,0 +1,145 @@
+1)
+
+gedit school
+
+ls
+
+hadoop fs -put school /user/cloudera
+
+hadoop fs -ls /user/cloudera
+
+hadoop fs -cat /user/cloudera/school
+
+COUNT
+
+cd /usr/lib/hadoop-0.20-mapreduce/
+
+ls
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar wordcount /user/cloudera/school /user/cloudera/output1
+
+hadoop  fs -ls /user/cloudera/school
+
+hadoop  fs -ls /user/cloudera/output1
+
+hadoop fs -cat /user/cloudera/output1/part-r-00000
+
+GREP
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar grep /user/cloudera/school /user/cloudera/outputschool fun
+
+hadoop  fs -ls /user/cloudera/school
+
+hadoop  fs -ls /user/cloudera/outputschool
+
+hadoop fs -cat /user/cloudera/outputschool/part-00000
+
+
+2) 
+sudo service mysqld start
+
+mysql -u root
+
+
+create database shopping;
+
+show databases;
+
+use shopping;
+
+create table product(name varchar(20), price int);
+
+create table customer(id int,name varchar(20));
+
+insert into product values('chocolate',20),('cake',40),('chips',10);
+
+insert into customer values(1,'Ram'),(2,'Sita'),(3,'Ben');
+
+exit
+
+2) 1)
+
+sqoop import --connect "jdbc:mysql://localhost/shopping" --username root --table product --target-dir /user/cloudera/dirproduct/fileproduct -m 1
+
+sqoop import --connect "jdbc:mysql://localhost/shopping" --username root --table customer --target-dir /user/cloudera/dirproduct/filecustomer -m 1
+
+2) 2)
+
+sqoop eval --connect "jdbc:mysql://localhost/shopping" --username root --query "select * from product"
+
+sqoop eval --connect "jdbc:mysql://localhost/shopping" --username root --query "update product set price=price*1.15"
+
+sqoop eval --connect "jdbc:mysql://localhost/shopping" --username root --query "select * from product"
+
+
+
+PART B
+
+1)
+
+gedit iplscoreboard
+
+pig -x local
+
+pigiplfile = load '/home/cloudera/iplscoreboard' using PigStorage (',') as (teamA:chararray,teamB:chararray,place:chararray,winner:chararray,byruns:int,bywickets:int,manofthematch:chararray); 
+
+
+dump pigiplfile;
+
+2) 4)
+
+a = filter pigiplfile by manofthematch matches '.*S.*';
+dump a;
+
+2) 5)
+
+b = filter pigiplfile by place=='Banglore' and winner=='RCB';
+dump b;
+
+
+2) 3)
+
+c = filter pigiplfile by teamA=='RCB' and teamB=='MI'; 
+
+e = foreach c generate UPPER(CONCAT(manofthematch,place));
+
+dump e;
+
+2) 1)
+
+h = filter pigiplfile by teamA=='KKR' and teamB=='MI';
+
+i = foreach h generate LOWER(winner),byruns,bywickets;
+
+dump i;
+
+2) 2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

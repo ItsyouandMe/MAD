@@ -1,0 +1,134 @@
+PART A
+
+1)
+
+sudo jps
+
+gedit sports
+
+ls
+
+hadoop fs -put sports /user/cloudera
+
+hadoop fs -ls /user/cloudera
+
+hadoop fs -cat /user/cloudera/sports
+
+COUNT:
+
+cd /usr/lib/hadoop-0.20-mapreduce/
+
+ls
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar wordcount /user/cloudera/sports /user/cloudera/output1sports
+
+hadoop fs -ls /user/cloudera/sports
+
+hadoop fs -ls /user/cloudera/output1sports
+
+hadoop fs -cat /user/cloudera/output1sports/part-r-00000
+
+GREP:
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar grep /user/cloudera/sports /user/cloudera/output2sports Swimming
+
+hadoop fs -ls /user/cloudera/sports
+
+hadoop fs -ls /user/cloudera/output2sports
+
+hadoop fs -cat /user/cloudera/output2sports/part-00000
+
+
+
+2)
+
+
+sudo service mysqld start
+
+mysql -u root
+
+create database library;
+
+use library;
+
+create table book(bid int);
+
+create table member(mid int,name varchar(20));
+
+insert into book values(1),(2),(3);
+
+insert into member values(10,'AA'),(20,'BB'),(30,'CC');
+
+exit
+
+sqoop eval --connect "jdbc:mysql://localhost/library" --username root --query "insert into book value(4),(5),(6)"
+
+sqoop import --connect "jdbc:mysql://localhost/library" --username root --table book --target-dir /user/cloudera/book1/book2 --incremental append --check-column bid --last-value 3 -m 1
+
+sqoop eval --connect "jdbc:mysql://localhost/library" --username root --query "select * from book"
+
+hadoop fs -cat /user/cloudera/book1/book2/part*
+
+
+
+
+
+PART B 
+
+1) 
+
+gedit staff
+
+
+hadoop fs -put staff /user/cloudera
+
+
+hive
+
+create database staffdb2;     // do if possible else no need this step                                                                                                                                                      
+
+use staffdb2; 			// do if possible else no need this step
+
+create table staff1(sno int, sname string, experience int,designation string,dept string)row format delimited fields terminated by '|' lines terminated by '\n' stored as textfile;
+
+
+load data local inpath '/home/cloudera/staff' into table staff1;
+
+
+select * from staff1;
+
+
+2) 1)
+
+select dept, count(*) from staff1 group by dept having count(*) >1;
+
+2) 2)
+
+Select sno, sname from staff1 where experience> 5 and dept="ISE"  Or dept = "civil";
+
+2) 3)
+
+
+Select substr(sname, 0,3) , dept from staff1 where designation = "assistant" OR designation="professor";	// might show error
+
+2) 4)
+
+select max(experience),dept from staff1 group by dept where dept="civil" and dept="ece";  // might show error
+
+2) 5)
+
+select sname, dept from staff1 where dept="ise" OR dept="ece" AND designation= "assistant" order by sname desc;
+
+
+
+
+
+
+
+
+
+
+
+

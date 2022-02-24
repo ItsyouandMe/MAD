@@ -1,0 +1,189 @@
+1)
+
+sudo jps
+
+gedit ipl
+
+ls
+
+hadoop fs -put ipl /user/cloudera
+
+hadoop fs -ls /user/cloudera
+
+hadoop fs -cat /user/cloudera/ipl
+
+COUNT:
+
+cd /usr/lib/hadoop-0.20-mapreduce/
+
+ls
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar wordcount /user/cloudera/ipl /user/cloudera/output1ipl
+
+hadoop fs -ls /user/cloudera/ipl
+
+hadoop fs -ls /user/cloudera/output1ipl
+
+hadoop fs -cat /user/cloudera/output1ipl/part-r-00000
+
+GREP:
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar grep /user/cloudera/ipl /user/cloudera/output2ipl IPL
+
+hadoop fs -ls /user/cloudera/ipl
+
+hadoop fs -ls /user/cloudera/output2ipl
+
+hadoop fs -cat /user/cloudera/output2ipl/part-00000
+
+
+
+2) 1)
+
+sudo service mysqld start
+
+mysql -u root
+
+create database hospital;
+
+show databases;
+
+use hospital;
+
+create table doctor(dname varchar(20),speciality varchar(20));
+
+create table patient(ptid int,name varchar(20));
+
+insert into doctor values('John','cardiology'),('Ram','dentist'),('Sita','cardiology');
+
+insert into patient values(1,'Ben'),(2,'Tom'),(3,'Jerry');
+
+exit
+
+sqoop import --connect "jdbc:mysql://localhost/hospital" --username root --table doctor --where "speciality='cardiology'" --target-dir /user/cloudera/dirhospital1/filehospital1 -m 1
+
+hadoop fs -cat /user/cloudera/dirhospital1/filehospital1/part*
+
+
+
+2) 2)
+
+sqoop eval --connect "jdbc:mysql://localhost/hospital" --username root --query "delete from patient where ptid = 1"
+
+
+hadoop fs -cat /user/cloudera/patient/part*
+
+
+
+PART B
+
+1)
+
+gedit book
+
+ls
+
+cat book
+
+pig -x local
+
+bag1 = load '/home/cloudera/book' using PigStorage(',') as (id:int,name:chararray,author:chararray,quantity:int,price:int);
+
+dump bag1;
+
+2) 1)
+
+gr = group bag1 all;
+
+result = foreach gr generate bag1.author,bag1.quantity,MAX(bag1.quantity);
+
+dump result;
+
+2) 2)
+
+
+a = limit bag1 3;
+
+gr1 = group a all;
+
+result = foreach gr1 generate a.id,a.name,AVG(a.price);  
+
+dump result; 
+
+
+2) 3) 
+
+r1 = for each gr generate bag1.id, UPPER(bag1.name);
+
+dump r1;
+
+
+2) 4)
+
+ans = foreach gr generate (bag1.name),INDEXOF(bag1.name,'a',0); // not correct
+
+r2 = for each gr generate bag1.author, INDEXOF(bag1.author, 'a',0);
+
+dump r2;
+
+2) 5)
+
+r3 = filter gr by price<600 and quantity ==5;
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

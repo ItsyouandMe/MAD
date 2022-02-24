@@ -1,0 +1,134 @@
+PART A
+
+1) sudo jps
+
+gedit sports
+
+ls
+
+hadoop fs -put sports /user/cloudera
+
+hadoop fs -ls /user/cloudera
+
+hadoop fs -cat /user/cloudera/sports
+
+COUNT:
+
+cd /usr/lib/hadoop-0.20-mapreduce/
+
+ls
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar wordcount /user/cloudera/sports /user/cloudera/output1sports
+
+hadoop fs -ls /user/cloudera/sports
+
+hadoop fs -ls /user/cloudera/output1sports
+
+hadoop fs -cat /user/cloudera/output1sports/part-r-00000
+
+GREP:
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar grep /user/cloudera/sports /user/cloudera/output2sports Swimming
+
+hadoop fs -ls /user/cloudera/sports
+
+hadoop fs -ls /user/cloudera/output2sports
+
+hadoop fs -cat /user/cloudera/output2sports/part-00000
+
+
+
+2) 
+
+sudo service mysqld start
+
+mysql -u root
+
+create database library;
+
+use library;
+
+create table book(bid int);
+
+create table member(mid int,name varchar(20));
+
+insert into book values(1),(2),(3);
+
+insert into member values(10,'AA'),(20,'BB'),(30,'CC');
+
+exit
+
+sqoop eval --connect "jdbc:mysql://localhost/library" --username root --query "insert into book value(4),(5),(6)"
+
+sqoop import --connect "jdbc:mysql://localhost/library" --username root --table book --target-dir /user/cloudera/book1/book2 --incremental append --check-column bid --last-value 3 -m 1
+
+sqoop eval --connect "jdbc:mysql://localhost/library" --username root --query "select * from book"
+
+hadoop fs -cat /user/cloudera/book1/book2/part*
+
+
+
+
+PART B
+
+1)
+
+gedit movie;
+
+
+hadoop fs -put movie /user/cloudera
+
+hive
+
+create database moviedb;                                                                                                                                                           
+
+use moviedb; 
+
+create table movietable(mno int,mname string,released int,actor string,tiicket_price int)row format delimited fields terminated by '|' lines terminated by '\n' stored as textfile;
+
+load data local inpath '/home/cloudera/movie' into table movietable;
+
+
+
+2) 1)
+
+
+select count(*) from movietable where released>2010;
+
+
+2) 2)
+
+select mno,substr(mname,1,4),tiicket_price from movietable where tiicket_price<100;
+
+2) 3)
+
+select actor, count(*) from movietable group by actor having count (*) >1;		//doubt
+
+2) 4)
+ 
+select * from movietable where released<2010 and tiicket_price<=70;
+
+2) 5)
+
+Select  mno, mname, actor from movietable where actor like "S%" Order by mno desc;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

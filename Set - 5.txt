@@ -1,0 +1,118 @@
+PART A
+
+1)
+sudo jps
+
+gedit sports
+
+ls
+
+hadoop fs -put sports /user/cloudera
+
+hadoop fs -ls /user/cloudera
+
+hadoop fs -cat /user/cloudera/sports
+
+COUNT:
+
+cd /usr/lib/hadoop-0.20-mapreduce/
+
+ls
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar wordcount /user/cloudera/sports /user/cloudera/output1sports
+
+hadoop fs -ls /user/cloudera/sports
+
+hadoop fs -ls /user/cloudera/output1sports
+
+hadoop fs -cat /user/cloudera/output1sports/part-r-00000
+
+GREP:
+
+hadoop jar /usr/lib/hadoop-0.20-mapreduce/hadoop-examples-2.0.0-mr1-cdh4.4.0.jar grep /user/cloudera/sports /user/cloudera/output2sports Swimming
+
+hadoop fs -ls /user/cloudera/sports
+
+hadoop fs -ls /user/cloudera/output2sports
+
+hadoop fs -cat /user/cloudera/output2sports/part-00000
+
+
+2)
+
+sudo service mysqld start
+mysql -u root
+
+create database people;
+show databases;
+use people;
+exit
+gedit customer
+sqoop eval --connect "jdbc:mysql://localhost/people" --username root --query "create table cust(cid int,name varchar(20),age int,address varchar(20))"
+
+sqoop export --connect "jdbc:mysql://localhost/people" --username root --table cust --export-dir /user/cloudera/customer
+sqoop eval --connect "jdbc:mysql://localhost/people" --username root --query "select * from cust"
+
+
+PART B
+
+1)
+
+gedit theatre
+
+hadoop fs -put theatre /user/cloudera/theatre2
+
+hive
+create database dbtheatre;
+use dbtheatre;
+
+create table movie(Tid int,Tname string,locatio string,No_of_screens int,Price int,Rating int)row format delimited fields terminated by '|' lines terminated by '\n' stored as textfile;
+
+load data local inpath '/home/cloudera/theatre' into table movie;
+
+2) 1)
+
+select Tname,Price from movie where Rating>=4 order by Price desc;
+
+2) 2)
+
+select Tid,Tname,UPPER(locatio) from movie;  //incomplete
+
+2) 3)
+
+select substr(Tname,1,3),Price,locatio from movie where No_of_screens>3;
+
+
+2) 4)
+
+select locatio,count(*) from movie group by locatio having count(*)>1;
+
+2) 5)
+
+select min(Price) from movie where Rating==4 and locatio!='Bellandur';
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
